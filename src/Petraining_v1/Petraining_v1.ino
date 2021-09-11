@@ -16,13 +16,6 @@ RTC_DS3231 MyRtc;
 Servo ServoLeft;
 Servo ServoRight;
 
-// Global varaibles
-//unsigned int ptdata.TypeOfConfig; // If 1 -> easy configuration mode, if 0 -> customized configuration mode
-//unsigned int ptdata.RealTimeApp[6]; // DateTime real time received from App. Values -> {year, month, day, hour, minute, second}
-//unsigned int ptdata.PetBirthDay[6]; // DataTime pet's birthday received from App. Values -> {year, month, day, 0, 0, 0}
-//unsigned int ptdata.QuantityOfFood[3]; // Quantity of food received from (should be between 50 gr and 500 gr)
-//unsigned int ptdata.FoodRations[3]; // Food rations will divide the quantity of food daily (should be between 2 and 4)
-
 ptBasicData ptdata;
 
 // Pet's age calculation control variables

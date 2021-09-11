@@ -79,7 +79,6 @@ void appDataReceiving(){
  */
 ptBasicData initLocalVariables(){
 
-
   ptBasicData a;
 
   a.TypeOfConfig = EEPROM.read(0);
