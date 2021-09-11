@@ -6,29 +6,24 @@
 #include <Wire.h> // I2C
 #include <ESP32Servo.h> // ServoMOTORs
 
-// CONSTANTS
-#define MAXGRAMS 55
-#define ADCBITS 4096
-
-// Pinouts
-#define SENSOR_INTERNAL 34 // ADC pin Output D34
-#define SENSOR_EXTERNAL 35 // ADC pin Output D35
-#define MOTOR 27 // Digital pin Output D27
-#define SERVO_LEFT 25 // PWM pin Output D25
-#define SERVO_RIGHT 26 // PWM pin Output D26
+// User Libraries
+#include "inc/PT_Libraries/PT_Defines.h"
+#include "inc/PT_Libraries/PT_EEPROM.h"
+#include "inc/PT_Libraries/PT_WIFI.h"
 
 // Objects
 RTC_DS3231 MyRtc;
 Servo ServoLeft;
 Servo ServoRight;
 
-
 // Global varaibles
-unsigned int TypeOfConfig; // If 1 -> easy configuration mode, if 0 -> customized configuration mode
-unsigned int RealTimeApp[6]; // DateTime real time received from App. Values -> {year, month, day, hour, minute, second}
-unsigned int PetBirthDay[6]; // DataTime pet's birthday received from App. Values -> {year, month, day, 0, 0, 0}
-unsigned int QuantityOfFood[3]; // Quantity of food received from (should be between 50 gr and 500 gr)
-unsigned int FoodRations[3]; // Food rations will divide the quantity of food daily (should be between 2 and 4)
+//unsigned int ptdata.TypeOfConfig; // If 1 -> easy configuration mode, if 0 -> customized configuration mode
+//unsigned int ptdata.RealTimeApp[6]; // DateTime real time received from App. Values -> {year, month, day, hour, minute, second}
+//unsigned int ptdata.PetBirthDay[6]; // DataTime pet's birthday received from App. Values -> {year, month, day, 0, 0, 0}
+//unsigned int ptdata.QuantityOfFood[3]; // Quantity of food received from (should be between 50 gr and 500 gr)
+//unsigned int ptdata.FoodRations[3]; // Food rations will divide the quantity of food daily (should be between 2 and 4)
+
+ptBasicData ptdata;
 
 // Pet's age calculation control variables
 unsigned int Age2Days; // Pet's age in days
@@ -70,13 +65,14 @@ void setup(){
 }
 
 void loop(){
+
   // DATA RECEIVING STAGE !!
   if( (EEPROM.read(0)!=1) && (EEPROM.read(0)!=2) ){ // Only if EEPROM.read(0) is 1 or 0 we go forward
     Serial.print("Waiting for receiving WiFi transmission...");
     while( (EEPROM.read(0)!=1) && (EEPROM.read(0)!=2) ){
       
       appDataReceiving(); // From here we should get the information we need from user's App and we storage it in EEPROM
-      initLocalVariables(); // Here we get the EERPOM values to new manageable varaibles
+      ptdata = initLocalVariables(); // Here we get the EERPOM values to new manageable varaibles
       initRTC(); // Here we configurate the RTC using user information
       
       delay(1000);
@@ -94,10 +90,10 @@ void loop(){
   // DISPENSATION STAGE !!
   calculatePetAge(); // We always need to calculate pet's age
   
-  if(TypeOfConfig == 1){ // EASY CONFIGURATION CASE
+  if(ptdata.TypeOfConfig == 1){ // EASY CONFIGURATION CASE
     calculateTimeDispensation();
   }
-  else if(TypeOfConfig == 2){ // CUSTOMIZABLE CONFIGURATION CASE
+  else if(ptdata.TypeOfConfig == 2){ // CUSTOMIZABLE CONFIGURATION CASE
     Serial.println("Custom");
   }
   
@@ -106,111 +102,13 @@ void loop(){
 }
 
 /////////////////////////////////////////////////// CUSTOMIZED FUNCTIONS //////////////////////////////////////////////////////////// 
-/*
- * Receives the App information from WiFi to storage it in the EEPROM
- */
-void appDataReceiving(){
- /* TODO: set WiFi transmission to get TypeOfConfig, RealTimeApp, PetBirthDay, QuantityOfFood and FoodRations from user's app
-  *       and storage that information in the EEPROM
-  */
-  
-  EEPROM.write(0,1); // TypeOfConfig -> 1 easy configuration
 
-  // SIMULATED DATE, NOT REAL DATETIME
-  EEPROM.write(1,0x07); // RealTimeApp[0] MSB year 2021
-  EEPROM.write(2,0xE5); // RealTimeApp[0] LSB year 2021
-  EEPROM.write(3,12);   // RealTimeApp[1] month 12
-  EEPROM.write(4,13);   // RealTimeApp[2] day 13
-  EEPROM.write(5,20);   // RealTimeApp[3] hour 20
-  EEPROM.write(6,30);   // RealTimeApp[4] minute 30
-  EEPROM.write(7,15);   // RealTimeApp[5] sec 15
-  
-  /*
-  // TEST: birthday 2020/12/21, older than 6 months
-  EEPROM.write(8,0x07); // PetBirthDay[0] MSB year 2020
-  EEPROM.write(9,0xE4); // PetBirthDay[0] LSB year 2020
-  EEPROM.write(10,12);  // PetBirthDay[1] month 12
-  EEPROM.write(11,21);  // PetBirthDay[2] day 21
-  EEPROM.write(12,0);   // PetBirthDay[3] hour 0
-  EEPROM.write(13,0);   // PetBirthDay[4] minute 0
-  EEPROM.write(14,0);   // PetBirthDay[5] sec 0
-  */
-
-  /*
-  // TEST: birthday 2021/4/21, between 3 and 6 months
-  EEPROM.write(8,0x07); // PetBirthDay[0] MSB year 2021
-  EEPROM.write(9,0xE5); // PetBirthDay[0] LSB year 2021
-  EEPROM.write(10,4);  // PetBirthDay[1] month 4
-  EEPROM.write(11,21);  // PetBirthDay[2] day 21
-  EEPROM.write(12,0);   // PetBirthDay[3] hour 0
-  EEPROM.write(13,0);   // PetBirthDay[4] minute 0
-  EEPROM.write(14,0);   // PetBirthDay[5] sec 0
-  */
-
-  
-  // TEST: birthday 2021/7/1, younger than 3 months 
-  EEPROM.write(8,0x07); // PetBirthDay[0] MSB year 2020
-  EEPROM.write(9,0xE5); // PetBirthDay[0] LSB year 2020
-  EEPROM.write(10,7);  // PetBirthDay[1] month 12
-  EEPROM.write(11,1);  // PetBirthDay[2] day 21
-  EEPROM.write(12,0);   // PetBirthDay[3] hour 0
-  EEPROM.write(13,0);   // PetBirthDay[4] minute 0
-  EEPROM.write(14,0);   // PetBirthDay[5] sec 0
-  
- 
-  EEPROM.write(15,0x00); // QuantityOfFood MSB 120 gr younger than 3 months
-  EEPROM.write(16,0x78); // QuantityOfFood LSB 120 gr younger than 3 months
-  EEPROM.write(17,0x00); // QuantityOfFood MSB 190 gr between 3 and 6 months
-  EEPROM.write(18,0xBE); // QuantityOfFood LSB 190 gr between 3 and 6 months
-  EEPROM.write(19,0x01); // QuantityOfFood MSB 260 gr older than 6 months
-  EEPROM.write(20,0x04); // QuantityOfFood LSB 260 gr older than 6 months 
-  
-  EEPROM.write(21,4);   // FoodRations younger than 3 months
-  EEPROM.write(22,3);   // FoodRations between 3 and 6 months
-  EEPROM.write(23,2);   // FoodRations elder than 6 months
-  EEPROM.commit();
-  
-}
-
-/*
- * Initializes local variables by using EEPROM information
- */
-void initLocalVariables(){
-
-  TypeOfConfig = EEPROM.read(0);
-  
-  // We get values of real time and date from EEPROM
-  RealTimeApp[0] = (EEPROM.read(1)<<8) | (EEPROM.read(2));
-  RealTimeApp[1] = EEPROM.read(3);
-  RealTimeApp[2] = EEPROM.read(4);
-  RealTimeApp[3] = EEPROM.read(5);
-  RealTimeApp[4] = EEPROM.read(6);
-  RealTimeApp[5] = EEPROM.read(7);
-  
-  // We get values of pet's age form EEPROM to our calculation variables
-  PetBirthDay[0] = (EEPROM.read(8)<<8) | (EEPROM.read(9));
-  PetBirthDay[1] = EEPROM.read(10);
-  PetBirthDay[2] = EEPROM.read(11);
-  PetBirthDay[3] = EEPROM.read(12);
-  PetBirthDay[4] = EEPROM.read(13);
-  PetBirthDay[5] = EEPROM.read(14);
-
-  // Quantity of food for everyone case
-  QuantityOfFood[0] = (EEPROM.read(15)<<8) | (EEPROM.read(16)); // Quantity of food if younger than 3 months
-  QuantityOfFood[1] = (EEPROM.read(17)<<8) | (EEPROM.read(18)); // Quantity of food if between 3 and 6 months
-  QuantityOfFood[2] = (EEPROM.read(19)<<8) | (EEPROM.read(20)); // Quantity of food if elder than 6 months
-
-  // Food rations for everyone case
-  FoodRations[0] = EEPROM.read(21); // Food rations if younger than 3 months
-  FoodRations[1] = EEPROM.read(22); // Food rations if between 3 and 6 months
-  FoodRations[2] = EEPROM.read(23); // Food rations if elder than 6 months
-}
 
 /*
  * Initializes RTC configuration by using user's App information
  */
 void initRTC(){
-  //MyRtc.adjust( DateTime(RealTimeApp[0], RealTimeApp[1], RealTimeApp[2], RealTimeApp[3], RealTimeApp[4], RealTimeApp[5]) ); // Sets real time from user's app
+  //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
   MyRtc.adjust(DateTime(2021, 8, 25, 8, 47, 50)); // TESTS
   //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
@@ -220,7 +118,7 @@ void initRTC(){
  */
 void calculatePetAge(){
   // Calculation pet's age
-  Age2Days = (MyRtc.now().year()*365 + MyRtc.now().month()*30 + MyRtc.now().day()+1) - (PetBirthDay[0]*365 + PetBirthDay[1]*30 + PetBirthDay[2]);
+  Age2Days = (MyRtc.now().year()*365 + MyRtc.now().month()*30 + MyRtc.now().day()+1) - (ptdata.PetBirthDay[0]*365 + ptdata.PetBirthDay[1]*30 + ptdata.PetBirthDay[2]);
 
   // Prints total days and pet's age
   Serial.println("PET'S AGE");
@@ -235,21 +133,21 @@ void calculateTimeDispensation(){
    */
   //if( (MyRtc.now().hour()>=0) && (MyRtc.now().hour()<=1) ){ 
     if(Age2Days<=90){ // Case 1: the pet is younger than 90 days -> 3 months
-      quantityoffood = QuantityOfFood[0];
-      foodrations = FoodRations[0];
+      quantityoffood = ptdata.QuantityOfFood[0];
+      foodrations = ptdata.FoodRations[0];
     }
     else if(Age2Days>90 and Age2Days<=180){ // Case 2: the pet is between 90 and 180 days -> 3 and 6 months
-      quantityoffood = QuantityOfFood[1];
-      foodrations = FoodRations[1];
+      quantityoffood = ptdata.QuantityOfFood[1];
+      foodrations = ptdata.FoodRations[1];
     }
     else if(Age2Days>180){ // Case 3: the pet is elder than 180 days -> 6 months  
-      quantityoffood = QuantityOfFood[2];
-      foodrations = FoodRations[2];
+      quantityoffood = ptdata.QuantityOfFood[2];
+      foodrations = ptdata.FoodRations[2];
     }
   //}
 
   /*
-   * Here we calculate in a "foodrations" rows and 2 columns matrix, the times that the system will dispense
+   * Here we calculate in a "ptdata.FoodRations" rows and 2 columns matrix, the times that the system will dispense
    * from 6:00 to 20:00 range excluding 6:00 and 20:00
    */
   for(int x=0; x<foodrations; x++){
@@ -390,22 +288,22 @@ void printEEPROMInfo(){
   Serial.println("EEPROM INFORMATION");
   Serial.println("If 1 -> easy configuration mode");
   Serial.println("if 2 -> customized configuration mode");
-  Serial.println("Configuration = "+String(TypeOfConfig));
+  Serial.println("Configuration = "+String(ptdata.TypeOfConfig));
   Serial.println("");
   
-  Serial.println("User's date (simulated - NOT REAL DATE): "+String( RealTimeApp[0] )+"/"+String(RealTimeApp[1])+"/"+String(RealTimeApp[2])+" user's time: "+String(RealTimeApp[3])+":"+String(RealTimeApp[4])+":"+String(RealTimeApp[5]));
+  Serial.println("User's date (simulated - NOT REAL DATE): "+String( ptdata.RealTimeApp[0] )+"/"+String(ptdata.RealTimeApp[1])+"/"+String(ptdata.RealTimeApp[2])+" user's time: "+String(ptdata.RealTimeApp[3])+":"+String(ptdata.RealTimeApp[4])+":"+String(ptdata.RealTimeApp[5]));
   Serial.println("");
   
-  Serial.println("Pet's birthday: "+String( PetBirthDay[2] )+"/"+String(PetBirthDay[1])+"/"+String(PetBirthDay[0])+" time: "+String(PetBirthDay[3])+":"+String(PetBirthDay[4])+":"+String(PetBirthDay[5]));
+  Serial.println("Pet's birthday: "+String( ptdata.PetBirthDay[2] )+"/"+String(ptdata.PetBirthDay[1])+"/"+String(ptdata.PetBirthDay[0])+" time: "+String(ptdata.PetBirthDay[3])+":"+String(ptdata.PetBirthDay[4])+":"+String(ptdata.PetBirthDay[5]));
   Serial.println("");
   
-  Serial.println("QuantityOfFood if younger than 3 months: "+String( QuantityOfFood[0] ));
-  Serial.println("QuantityOfFood if between 3 and 6 months: "+String( QuantityOfFood[1] ));
-  Serial.println("QuantityOfFood if older than 6 months: "+String( QuantityOfFood[2] ));
+  Serial.println("ptdata.QuantityOfFood if younger than 3 months: "+String( ptdata.QuantityOfFood[0] ));
+  Serial.println("ptdata.QuantityOfFood if between 3 and 6 months: "+String( ptdata.QuantityOfFood[1] ));
+  Serial.println("ptdata.QuantityOfFood if older than 6 months: "+String( ptdata.QuantityOfFood[2] ));
   Serial.println("");
   
-  Serial.println("FoodRations if younger than 3 months: "+String( FoodRations[0] ));
-  Serial.println("FoodRations if between 3 and 6 months: "+String( FoodRations[1] ));
-  Serial.println("FoodRations if older than 6 months: "+String( FoodRations[2] ));
+  Serial.println("ptdata.FoodRations if younger than 3 months: "+String( ptdata.FoodRations[0] ));
+  Serial.println("ptdata.FoodRations if between 3 and 6 months: "+String( ptdata.FoodRations[1] ));
+  Serial.println("ptdata.FoodRations if older than 6 months: "+String( ptdata.FoodRations[2] ));
   Serial.println("");
 }
