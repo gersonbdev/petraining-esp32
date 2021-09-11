@@ -4,18 +4,18 @@
 #include <RTClib.h> // Real Time Clock module
 #include <EEPROM.h> // EEPROM partition from flash memory
 #include <Wire.h> // I2C
-#include <ESP32Servo.h> // Servomotors
+#include <ESP32Servo.h> // ServoMOTORs
 
 // CONSTANTS
 #define MAXGRAMS 55
 #define ADCBITS 4096
 
 // Pinouts
-#define InternalSensor 34 // ADC pin Output D34
-#define ExternalSensor 35 // ADC pin Output D35
-#define Motor 27 // Digital pin Output D27
-#define LeftServo 25 // PWM pin Output D25
-#define RightServo 26 // PWM pin Output D26
+#define SENSOR_INTERNAL 34 // ADC pin Output D34
+#define SENSOR_EXTERNAL 35 // ADC pin Output D35
+#define MOTOR 27 // Digital pin Output D27
+#define SERVO_LEFT 25 // PWM pin Output D25
+#define SERVO_RIGHT 26 // PWM pin Output D26
 
 // Objects
 RTC_DS3231 MyRtc;
@@ -55,7 +55,7 @@ void setup(){
       DispenseTimes[n][m] = 0;
     }
   }  
-  pinMode(Motor, OUTPUT);
+  pinMode(MOTOR, OUTPUT);
   initServos();
   Serial.begin(115200);
   EEPROM.begin(50);
@@ -288,9 +288,9 @@ void dispense(){
 
   QuantityToDispense = quantityoffood/foodrations;
   
-  InternalWeightRead = analogRead(InternalSensor);
+  InternalWeightRead = analogRead(SENSOR_INTERNAL);
   InternalWeight = map(InternalWeightRead, 0, ADCBITS, 0, MAXGRAMS); // ADC D34
-  ExternalWeightRead = analogRead(ExternalSensor);
+  ExternalWeightRead = analogRead(SENSOR_EXTERNAL);
   ExternalWeight = map(ExternalWeightRead, 0, ADCBITS, 0, MAXGRAMS); // ADC D35
   
   // Quantity of food to dispense calculation
@@ -304,13 +304,13 @@ void dispense(){
   if(RealDispense > 0){
     
     while(InternalWeight < RealDispense){
-      // Enable motor to dispense
-      digitalWrite(Motor, HIGH);
+      // Enable MOTOR to dispense
+      digitalWrite(MOTOR, HIGH);
       
       //////////// VISUALIZING TESTS ////////////////
-      InternalWeightRead = analogRead(InternalSensor);
+      InternalWeightRead = analogRead(SENSOR_INTERNAL);
       InternalWeight = map(InternalWeightRead, 0, ADCBITS, 0, MAXGRAMS); // ADC D34
-      ExternalWeightRead = analogRead(ExternalSensor);
+      ExternalWeightRead = analogRead(SENSOR_EXTERNAL);
       ExternalWeight = map(ExternalWeightRead, 0, ADCBITS, 0, MAXGRAMS); // ADC D35
       Serial.println("DISPENSING FOOD, MOTOR WORKING !!!!");
       Serial.println("");
@@ -322,8 +322,8 @@ void dispense(){
       delay(500);
       //////////// VISUALIZING TESTS ////////////////
     }
-    // Disable motor 
-    digitalWrite(Motor, LOW);
+    // Disable MOTOR 
+    digitalWrite(MOTOR, LOW);
     for(int x=5; x>0; x--){
       Serial.println("MOTOR STALLED, WAITING "+String(x)+" SECONDS TO DEPLOY SERVOS");
       delay(1000); // Dispenseation ends //////////////////////////
@@ -363,8 +363,8 @@ void initServos(){
   ServoLeft.setPeriodHertz(50); // 20 ms
   ServoRight.setPeriodHertz(50); // 20 ms
   
-  ServoLeft.attach(LeftServo, 500, 2400);
-  ServoRight.attach(RightServo, 500, 2400);
+  ServoLeft.attach(SERVO_LEFT, 500, 2400);
+  ServoRight.attach(SERVO_RIGHT, 500, 2400);
 }
 //////////////////////////////////////////// VISUALIZING FUNCTIONS //////////////////////////////////////////////////////
 
