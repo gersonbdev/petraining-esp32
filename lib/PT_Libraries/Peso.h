@@ -10,8 +10,6 @@ float calibration_factor = -951; // funciona para mi celda de carga de 1 kgs
 void pesoIN() {
   Serial.begin(9600);
   //Serial.println("Peso entrada parqueadero");
-  
-
 
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   scale.set_scale();

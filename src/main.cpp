@@ -2,12 +2,11 @@
 #include <RTClib.h> // Real Time Clock module
 #include <EEPROM.h> // EEPROM partition from flash memory
 #include <Wire.h> // I2C
-#include <ESP32Servo.h> // Servos
 
 // User Libraries
 #include "PT_Constants.h"
-#include "PT_EEPROM.h"
 #include "PT_Dispense.h"
+#include "PT_EEPROM.h"
 
 // Objects
 RTC_DS3231 MyRtc;
@@ -16,10 +15,10 @@ RTC_DS3231 MyRtc;
 unsigned int Age2Days; // Pet's age in days
 
 // Dispensation TIME control variables
-byte cont = 0;
+byte cont = 0; // counter of dispensation times throughout the day
 int foodrations; // rations we will dispense throughout the day
 int quantityoffood; // quantity of food (gr) we'd like to dispense per day
-int DispenseTimes[6][2]; // times dispensation matrix
+int DispenseTimes[10][2]; // times dispensation matrix
 
 /////////////////////////////////////////////////// USER FUNCTIONS //////////////////////////////////////////////////////////// 
 
@@ -50,7 +49,7 @@ void calculateEasyTimeDispensation(){
    *  This guarantees to us that calculation of Age2Days won't affect to
    *  calculation time dispensation
    */
-//if( (MyRtc.now().hour()>=0) && (MyRtc.now().hour()<=1) ){ 
+//if( (MyRtc.now().hour()>=0) && (MyRtc.now().hour()<=1) ){
     if(Age2Days<=90){ // Case 1: the pet is younger than 90 days -> 3 months
       quantityoffood = ptdata.QuantityOfFood[0];
       foodrations = ptdata.FoodRations[0];
@@ -70,7 +69,7 @@ void calculateEasyTimeDispensation(){
    * from 6:00 to 20:00 range excluding 6:00 and 20:00
    */
   for(int x=0; x<foodrations; x++){
-    DispenseTimes[x][1] = (14/float(foodrations+1)*(x+1)+6)*60; // All time in minutes
+    DispenseTimes[x][1] = ((TIME_WINDOW)/float(foodrations+1)*(x+1)+6)*60; // All time in minutes
     DispenseTimes[x][0] = (DispenseTimes[x][1])/60; // Only the hour of the time (->hh:mm:ss)
     DispenseTimes[x][1] = (DispenseTimes[x][1] - DispenseTimes[x][0]*60); //Only the minute of the time (hh:->mm:ss)
   }
@@ -88,14 +87,14 @@ void calculateEasyTimeDispensation(){
    * Dispensation of food will only occurred between 6 am and 8 pm,
    * at leas for easy configuration case
    */
-  if( (MyRtc.now().hour()>=6) && (MyRtc.now().hour()<=20) ){
+  if( (MyRtc.now().hour()>=TIME_INF) && (MyRtc.now().hour()<=TIME_SUP) ){
     if( (MyRtc.now().hour() == DispenseTimes[cont][0]) && (MyRtc.now().minute() == DispenseTimes[cont][1])){
       cont++;
       Serial.println("");
       Serial.println("Cont: "+String(cont));
-      dispense(QuantityToDispense); // Routine that will move the servos and the DC motor in order to dispense food
+      dispense(QuantityToDispense); // Routine that will move the linear actuator and the DC motor in order to dispense food
       
-      if(cont>=foodrations)
+      if(cont >= foodrations)
         cont=0;
     } 
   }
@@ -148,15 +147,22 @@ void printEEPROMInfo(){
 /////////////////////////////// SETUP ///////////////////////////////////
 
 void setup(){
+  Serial.begin(115200);
+
+  // Initialize dispensation times matrix in 0
   for(int n=0; n<6; n++){
     for(int m=0; m<2; m++){
       DispenseTimes[n][m] = 0;
     }
   }  
-  pinMode(MOTOR, OUTPUT);
-  initServos();
-  Serial.begin(9600);
+
+  // Output Motor Pins (possible to use PWM)
+  pinMode(SCREW_MOTOR, OUTPUT);
+  pinMode(LINEAR_MOTOR_R, OUTPUT);
+  pinMode(LINEAR_MOTOR_L, OUTPUT);
+
   initLoadCells();
+
   EEPROM.begin(50); // Gives us 50 bytes from the eeprom (flash memory o ESP32)
   EEPROM.write(0,0); // Test
   EEPROM.commit(); // Test
@@ -171,9 +177,11 @@ void setup(){
 void loop(){
 
   // DATA RECEIVING STAGE !!
-  if( (EEPROM.read(0)!=1) && (EEPROM.read(0)!=2) ){ // Only if EEPROM.read(0) is 1 or 0 we go forward
+  if( (!SETUP_EASY) && (!SETUP_CUSTOM) ){ // Only if EEPROM.read(0) is 1 or 0 we go forward
+
     Serial.print("Waiting for receiving WiFi transmission...");
-    while( (EEPROM.read(0)!=1) && (EEPROM.read(0)!=2) ){
+    
+    while( (!SETUP_EASY) && (!SETUP_CUSTOM) ){
       
       appDataReceiving(); // From here we should get the information we need from user's App and we storage it in EEPROM
       initLocalVariables(); // Here we get the EERPOM values to new manageable varaibles
@@ -194,10 +202,10 @@ void loop(){
   // DISPENSATION STAGE !!
   calculatePetAge(); // We always need to calculate pet's age
   
-  if(ptdata.TypeOfConfig == 1){ // EASY CONFIGURATION CASE
+  if(ptdata.TypeOfConfig == CONFIG_EASY){ // EASY CONFIGURATION CASE
     calculateEasyTimeDispensation();
   }
-  else if(ptdata.TypeOfConfig == 2){ // CUSTOMIZABLE CONFIGURATION CASE
+  else if(ptdata.TypeOfConfig == CONFIG_CUSTOM){ // CUSTOMIZABLE CONFIGURATION CASE
     Serial.println("Custom");
   }
   

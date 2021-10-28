@@ -1,93 +1,57 @@
-#include <ESP32Servo.h> // Servos
+#include "PT_Constants.h"
 #include "PT_LoadCell.h"
-
-// Objects
-Servo ServoLeft;
-Servo ServoRight;
 
 // Dispensation QUANTITY control variables
 int QuantityToDispense; // quantity to dispense in one try
-int ExternalWeight;
-int InternalWeight;
+int InternalWeight = 15;// TEST!!!!!!!!!
 
 /*
- * Routine of dispense
+ * Actuators function
  */
 void dispense(int QuantityToDispense){
-  
+
   InternalWeight = internal.get_units(10);
-  delay(50);
-  ExternalWeight = external.get_units(10);
-  
-  // Quantity of food to dispense calculation
-  float RealDispense = QuantityToDispense - ExternalWeight;
 
-  // Retract servos (initial position)
-  ServoLeft.write(180);
-  ServoRight.write(0);
-  delay(1000);
-  
-  if(RealDispense > 0){
-    
-    while(InternalWeight < RealDispense){
-      // Enable MOTOR to dispense
-      digitalWrite(MOTOR, HIGH);
-      
-      //////////// VISUALIZING TESTS ////////////////
-      InternalWeight = internal.get_units(10);
-      delay(50);
-      ExternalWeight = external.get_units(10);
-      Serial.println("DISPENSING FOOD, MOTOR WORKING !!!!");
-      Serial.println("");
-      Serial.println("Real quantity to dispense = "+String(RealDispense)+" grams");
-      Serial.println("");
-      Serial.println("External weight = "+String(ExternalWeight)+" grams");
-      Serial.println("Internal weight = "+String(InternalWeight)+" grams");
-      Serial.println("");
-      delay(500);
-      //////////// VISUALIZING TESTS ////////////////
-    }
-    // Disable MOTOR 
-    digitalWrite(MOTOR, LOW);
-    for(int x=5; x>0; x--){
-      Serial.println("MOTOR STALLED, WAITING "+String(x)+" SECONDS TO DEPLOY SERVOS");
-      delay(1000); // Dispenseation ends //////////////////////////
-    }
+  while(InternalWeight < QuantityToDispense){
+
+    // Enable SCREW_MOTOR to dispense
+    digitalWrite(SCREW_MOTOR, HIGH);
+
+    //////////// VISUALIZING TESTS ////////////////    
+    delay(50);
+    Serial.println("DISPENSING FOOD, SCREW_MOTOR WORKING !!!!");
     Serial.println("");
-    
-    // Deploy servos
-    for(int pos=0; pos<=180; pos+=1){
-      ServoLeft.write(180-pos);
-      ServoRight.write(pos);
-      delay(5);
-    }
-    for(int x=5; x>0; x--){
-      Serial.println("LEAVING FOOD TO FALL DOWN. IN "+String(x)+" SECONDS SERVOS WILL RETRACT");
-      delay(1000); // Dispenseation ends //////////////////////////
-    }
-   
-    // Retract servos
-    for(int pos=180; pos>=0; pos-=1){
-      ServoLeft.write(180-pos);
-      ServoRight.write(pos);
-      delay(5);
-    }
+    Serial.println("Real quantity to dispense = "+String(QuantityToDispense)+" grams");
+    Serial.println("");
+    Serial.println("Internal weight = "+String(InternalWeight)+" grams");
+    Serial.println("");
+    delay(500);
+    //////////// VISUALIZING TESTS ////////////////
+
+    InternalWeight = internal.get_units(10);
   }
-}
 
-/*
- * Servos initialization
- */
-void initServos(){
-  
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  ESP32PWM::allocateTimer(2);
-  ESP32PWM::allocateTimer(3);
+  // Disable SCREW_MOTOR
+  Serial.println("SCREW MOTOR STALLED !!!!");
+  Serial.println("");
+  digitalWrite(SCREW_MOTOR, LOW);
+  delay(500);
 
-  ServoLeft.setPeriodHertz(50); // 20 ms
-  ServoRight.setPeriodHertz(50); // 20 ms
-  
-  ServoLeft.attach(SERVO_LEFT, 500, 2400);
-  ServoRight.attach(SERVO_RIGHT, 500, 2400);
+  // Linear actuator starts pushing food out of the plate
+  Serial.println("LINEAR ACTUATOR GOES FORWARD !!!!");
+  Serial.println("");
+  digitalWrite(LINEAR_MOTOR_R, HIGH); // Right move by using H-bridge (Linear Actuator Forwards)
+  digitalWrite(LINEAR_MOTOR_L, LOW); // Right move by using H-bridge (Linear Actuator Forwards)
+  delay(9000);
+  digitalWrite(LINEAR_MOTOR_R, LOW); // Motor stalled
+  digitalWrite(LINEAR_MOTOR_L, LOW);
+  delay(100); // Shall be teste: time linear actuator takes to get plate border
+  Serial.println("LINEAR ACTUATOR GOES BACKWARD !!!!");
+  Serial.println("");
+  digitalWrite(LINEAR_MOTOR_R, LOW); // Left move by using H-bridge (Linear Actuator Backwards)
+  digitalWrite(LINEAR_MOTOR_L, HIGH); // Left move by using H-bridge (Linear Actuator Backwards)
+  delay(9000);
+  digitalWrite(LINEAR_MOTOR_R, LOW); // Motor stalled
+  digitalWrite(LINEAR_MOTOR_L, LOW);
+
 }

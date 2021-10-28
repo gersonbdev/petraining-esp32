@@ -1,14 +1,19 @@
-// CONSTANTS
-#define MAXGRAMS 55
-#define ADCBITS 4096
-
-// Pinouts
-#define SENSOR_INTERNAL 34 // ADC pin Output D34
-#define SENSOR_EXTERNAL 35 // ADC pin Output D35
-#define MOTOR 27 // Digital pin Output D27
-#define SERVO_LEFT 25 // PWM pin Output D25
-#define SERVO_RIGHT 26 // PWM pin Output D26
+// PINOUTS
+#define SCREW_MOTOR 27 // Digital pin output D27 -> endless screw
+#define LINEAR_MOTOR_R 25 // Digital pin output D34 -> linear actuator right turn (H bridge)
+#define LINEAR_MOTOR_L 33 // Digital pin output D35 -> linear actuator left turn (H bridge)
 #define DOUT_INT 19 // Data output pin 19 HX711 internal 
 #define CLK_INT 18 // Clock output pin 18 HX711 internal
-#define DOUT_EXT 13 // Data output pin 13 HX711 external 
-#define CLK_EXT 14 // Clock output pin 18 HX711 external
+//#define DOUT_EXT 13 // Data output pin 13 HX711 external 
+//#define CLK_EXT 14 // Clock output pin 14 HX711 external
+
+// CONSTANTS
+#define TIME_SUP 20 // Hours in 24h format
+#define TIME_INF 6 // Hours in 24h format
+#define CONFIG_EASY 1 // Easy configuratioon preset for quick starting for user
+#define CONFIG_CUSTOM 2 // Custom configuratioon preset for quick starting for user
+
+// MACROS
+#define SETUP_EASY (EEPROM.read(0) == CONFIG_EASY) // Preset easy configuration -> 1
+#define SETUP_CUSTOM (EEPROM.read(0) == CONFIG_CUSTOM) // Preset customized configuration -> 2
+#define TIME_WINDOW (TIME_SUP - TIME_INF) // Window time in hours in 24h format

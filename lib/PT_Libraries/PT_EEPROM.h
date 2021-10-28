@@ -68,7 +68,7 @@ void appDataReceiving(){
   EEPROM.write(17,0x00); // QuantityOfFood MSB 190 gr between 3 and 6 months
   EEPROM.write(18,0xBE); // QuantityOfFood LSB 190 gr between 3 and 6 months
   EEPROM.write(19,0x01); // QuantityOfFood MSB 260 gr older than 6 months
-  EEPROM.write(20,0x04); // QuantityOfFood LSB 260 gr older than 6 months 
+  EEPROM.write(20,0x04); // QuantityOfFood LSB 260 gr older than 6 months
   
   EEPROM.write(21,4);   // FoodRations younger than 3 months
   EEPROM.write(22,3);   // FoodRations between 3 and 6 months

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3a01232c-d14b-4b07-ad67-7e168f75b68c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/lib/PT_Libraries/PT_Constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/PT_Libraries/PT_Constants.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/PT_Libraries/PT_Dispense.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/PT_Libraries/PT_Dispense.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/PT_Libraries/PT_LoadCell.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/PT_Libraries/PT_LoadCell.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectId" id="1zf4dqxpWa6bfr22rcNlvTK8GkY" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3a01232c-d14b-4b07-ad67-7e168f75b68c" name="Default Changelist" comment="" />
+      <created>1634525920919</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1634525920919</updated>
+    </task>
+    <servers />
+  </component>
+</project>
