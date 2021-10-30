@@ -3,15 +3,11 @@
 
 // Dispensation QUANTITY control variables
 int QuantityToDispense; // quantity to dispense in one try
-int InternalWeight = 15;// TEST!!!!!!!!!
+int InternalWeight;
 
-/*
- * Actuators function
- */
 void dispense(int QuantityToDispense){
 
-  InternalWeight = internal.get_units(10);
-
+  InternalWeight = internal.get_units(10); // Internal weight sense
   while(InternalWeight < QuantityToDispense){
 
     // Enable SCREW_MOTOR to dispense
@@ -31,27 +27,33 @@ void dispense(int QuantityToDispense){
     InternalWeight = internal.get_units(10);
   }
 
-  // Disable SCREW_MOTOR
+  // Disable SCREW MOTOR
   Serial.println("SCREW MOTOR STALLED !!!!");
   Serial.println("");
   digitalWrite(SCREW_MOTOR, LOW);
   delay(500);
 
-  // Linear actuator starts pushing food out of the plate
+  // Right move by using H-bridge (Linear Actuator Forwards) [1 0]
   Serial.println("LINEAR ACTUATOR GOES FORWARD !!!!");
   Serial.println("");
-  digitalWrite(LINEAR_MOTOR_R, HIGH); // Right move by using H-bridge (Linear Actuator Forwards)
-  digitalWrite(LINEAR_MOTOR_L, LOW); // Right move by using H-bridge (Linear Actuator Forwards)
-  delay(9000);
-  digitalWrite(LINEAR_MOTOR_R, LOW); // Motor stalled
+  digitalWrite(LINEAR_MOTOR_R, HIGH); 
+  digitalWrite(LINEAR_MOTOR_L, LOW); 
+  delay(13000);
+
+  // Motor stalled [0 0]
+  digitalWrite(LINEAR_MOTOR_R, LOW); 
   digitalWrite(LINEAR_MOTOR_L, LOW);
-  delay(100); // Shall be teste: time linear actuator takes to get plate border
+  delay(100);
+
+  // Left move by using H-bridge (Linear Actuator Backwards) [0 1]
   Serial.println("LINEAR ACTUATOR GOES BACKWARD !!!!");
   Serial.println("");
-  digitalWrite(LINEAR_MOTOR_R, LOW); // Left move by using H-bridge (Linear Actuator Backwards)
-  digitalWrite(LINEAR_MOTOR_L, HIGH); // Left move by using H-bridge (Linear Actuator Backwards)
-  delay(9000);
-  digitalWrite(LINEAR_MOTOR_R, LOW); // Motor stalled
+  digitalWrite(LINEAR_MOTOR_R, LOW); 
+  digitalWrite(LINEAR_MOTOR_L, HIGH);
+  delay(13000);
+
+  // Motor stalled
+  digitalWrite(LINEAR_MOTOR_R, LOW); 
   digitalWrite(LINEAR_MOTOR_L, LOW);
 
 }

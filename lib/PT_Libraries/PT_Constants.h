@@ -6,6 +6,7 @@
 #define CLK_INT 18 // Clock output pin 18 HX711 internal
 //#define DOUT_EXT 13 // Data output pin 13 HX711 external 
 //#define CLK_EXT 14 // Clock output pin 14 HX711 external
+// SCL -> 22 & SDA -> 21 || RTC
 
 // CONSTANTS
 #define TIME_SUP 20 // Hours in 24h format

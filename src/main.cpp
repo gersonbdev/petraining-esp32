@@ -26,9 +26,11 @@ int DispenseTimes[10][2]; // times dispensation matrix
  * Initializes RTC configuration by using user's App information
  */
 void initRTC(){
+
+  MyRtc.begin();
   //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
-  MyRtc.adjust(DateTime(2021, 8, 25, 8, 47, 50)); // TESTS
-  //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
+  //MyRtc.adjust(DateTime(2021, 8, 25, 8, 47, 50)); // TESTS
+  MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
 
 /*
@@ -49,19 +51,19 @@ void calculateEasyTimeDispensation(){
    *  This guarantees to us that calculation of Age2Days won't affect to
    *  calculation time dispensation
    */
-//if( (MyRtc.now().hour()>=0) && (MyRtc.now().hour()<=1) ){
-    if(Age2Days<=90){ // Case 1: the pet is younger than 90 days -> 3 months
-      quantityoffood = ptdata.QuantityOfFood[0];
-      foodrations = ptdata.FoodRations[0];
-    }
-    else if(Age2Days>90 and Age2Days<=180){ // Case 2: the pet is between 90 and 180 days -> 3 and 6 months
-      quantityoffood = ptdata.QuantityOfFood[1];
-      foodrations = ptdata.FoodRations[1];
-    }
-    else if(Age2Days>180){ // Case 3: the pet is elder than 180 days -> 6 months  
-      quantityoffood = ptdata.QuantityOfFood[2];
-      foodrations = ptdata.FoodRations[2];
-    }
+//if( (MyRtc.now().hour()>=23) && (MyRtc.now().hour()<=1) ){ // This line causes problems 
+  if(Age2Days<=90){ // Case 1: the pet is younger than 90 days -> 3 months
+    quantityoffood = ptdata.QuantityOfFood[0];
+    foodrations = ptdata.FoodRations[0];
+  }
+  else if(Age2Days>90 && Age2Days<=180){ // Case 2: the pet is between 90 and 180 days -> 3 and 6 months
+    quantityoffood = ptdata.QuantityOfFood[1];
+    foodrations = ptdata.FoodRations[1];
+  }
+  else if(Age2Days>180){ // Case 3: the pet is elder than 180 days -> 6 months  
+    quantityoffood = ptdata.QuantityOfFood[2];
+    foodrations = ptdata.FoodRations[2];
+  }
 //}
 
   /*
@@ -103,25 +105,30 @@ void calculateEasyTimeDispensation(){
 //////////////////////////////////////////// VISUALIZING FUNCTIONS //////////////////////////////////////////////////////
 
 void printRtcConfig(){
-  DateTime realDateTime = MyRtc.now();
 
-  Serial.print("REAL DATE: ");
+  Serial.println("REAL TIME////////// BEGIN ///////////");
+  
+  DateTime realDateTime = MyRtc.now();
+  Serial.print("DATE: ");
   Serial.print(realDateTime.day());
   Serial.print("/");
   Serial.print(realDateTime.month());
   Serial.print("/");
   Serial.print(realDateTime.year());
-  Serial.print(" REAL TIME: ");
+  Serial.print(" || TIME: ");
   Serial.print(realDateTime.hour());
   Serial.print(":");
   Serial.print(realDateTime.minute());
   Serial.print(":");
   Serial.println(realDateTime.second());
+
+  Serial.println("REAL TIME////////// END ///////////");
   Serial.println("");
 }
 
 void printEEPROMInfo(){
-  Serial.println("EEPROM INFORMATION");
+  Serial.println("EEPROM INFORMATION////////// BEGIN ///////////");
+  Serial.println("");
   Serial.println("If 1 -> easy configuration mode");
   Serial.println("if 2 -> customized configuration mode");
   Serial.println("Configuration = "+String(ptdata.TypeOfConfig));
@@ -142,9 +149,15 @@ void printEEPROMInfo(){
   Serial.println("ptdata.FoodRations if between 3 and 6 months: "+String( ptdata.FoodRations[1] ));
   Serial.println("ptdata.FoodRations if older than 6 months: "+String( ptdata.FoodRations[2] ));
   Serial.println("");
+  Serial.println("EEPROM INFORMATION////////// END ///////////");
+  Serial.println("");
 }
 
-/////////////////////////////// SETUP ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////-----SETUP-----///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 void setup(){
   Serial.begin(115200);
@@ -172,6 +185,7 @@ void setup(){
     Serial.println("");
     delay(1000);
   }
+
 }
 
 void loop(){
@@ -195,7 +209,8 @@ void loop(){
     Serial.println("");
   }
   
-  Serial.println("////////////////////////////////////////////////////////////////////////////");
+  Serial.println("");
+  Serial.println("");
   printEEPROMInfo();
   printRtcConfig();
   
