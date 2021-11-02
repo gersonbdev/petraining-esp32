@@ -13,6 +13,7 @@
 #define TIME_INF 6 // Hours in 24h format
 #define CONFIG_EASY 1 // Easy configuratioon preset for quick starting for user
 #define CONFIG_CUSTOM 2 // Custom configuratioon preset for quick starting for user
+#define MAX_DISPENSE_PER_DAY 10 // Maximum times dispensation will happen per day
 
 // MACROS
 #define SETUP_EASY (EEPROM.read(0) == CONFIG_EASY) // Preset easy configuration -> 1

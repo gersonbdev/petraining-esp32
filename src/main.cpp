@@ -18,7 +18,7 @@ unsigned int Age2Days; // Pet's age in days
 byte cont = 0; // counter of dispensation times throughout the day
 int foodrations; // rations we will dispense throughout the day
 int quantityoffood; // quantity of food (gr) we'd like to dispense per day
-int DispenseTimes[10][2]; // times dispensation matrix
+int DispenseTimes[MAX_DISPENSE_PER_DAY][2]; // times dispensation matrix
 
 /////////////////////////////////////////////////// USER FUNCTIONS //////////////////////////////////////////////////////////// 
 
@@ -29,8 +29,8 @@ void initRTC(){
 
   MyRtc.begin();
   //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
-  //MyRtc.adjust(DateTime(2021, 8, 25, 8, 47, 50)); // TESTS
-  MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
+  MyRtc.adjust(DateTime(2021, 11, 1, 13, 40, 0)); // TESTS
+  //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
 
 /*
@@ -47,11 +47,11 @@ void calculatePetAge(){
 }
 
 void calculateEasyTimeDispensation(){
-  /* 
+  /**
    *  This guarantees to us that calculation of Age2Days won't affect to
    *  calculation time dispensation
    */
-//if( (MyRtc.now().hour()>=23) && (MyRtc.now().hour()<=1) ){ // This line causes problems 
+//if( (MyRtc.now().hour()>=23) && (MyRtc.now().hour()<=1) ){ // This line causes problems !!!!
   if(Age2Days<=90){ // Case 1: the pet is younger than 90 days -> 3 months
     quantityoffood = ptdata.QuantityOfFood[0];
     foodrations = ptdata.FoodRations[0];
@@ -66,7 +66,7 @@ void calculateEasyTimeDispensation(){
   }
 //}
 
-  /*
+  /**
    * Here we calculate in a "quantityoffood" rows and 2 columns matrix, the times that the system will dispense
    * from 6:00 to 20:00 range excluding 6:00 and 20:00
    */
@@ -83,6 +83,36 @@ void calculateEasyTimeDispensation(){
     Serial.println(String(DispenseTimes[y][0])+" hours and "+String(DispenseTimes[y][1])+" minutes");
   }
   
+  /**
+   * looking for no nulls values in DispenseTimes Matrix
+   * and adjusting cont 
+   */
+  int i = 0;
+  int bandera = 0;
+  while(bandera == 0){
+
+    if(MyRtc.now().hour() <= DispenseTimes[i][0]){
+
+      if(MyRtc.now().hour() == DispenseTimes[i][0]){
+
+        if(MyRtc.now().minute() <= DispenseTimes[i][1]){
+          cont = i; bandera = 1;
+        }else if(MyRtc.now().minute() > DispenseTimes[i][1]){
+          i++;
+        }
+
+      }else if(MyRtc.now().hour() < DispenseTimes[i][0]){
+        cont = i; bandera = 1;
+      }
+
+    }else{
+      i++;
+    }
+    if(cont >= foodrations){
+      cont = 0; bandera = 1;
+    }
+  }
+
   Serial.println("");
   Serial.println("Cont: "+String(cont));
   /*
@@ -91,13 +121,19 @@ void calculateEasyTimeDispensation(){
    */
   if( (MyRtc.now().hour()>=TIME_INF) && (MyRtc.now().hour()<=TIME_SUP) ){
     if( (MyRtc.now().hour() == DispenseTimes[cont][0]) && (MyRtc.now().minute() == DispenseTimes[cont][1])){
-      cont++;
+
       Serial.println("");
-      Serial.println("Cont: "+String(cont));
+      Serial.println("Before dispense, Cont: "+String(cont));
+
       dispense(QuantityToDispense); // Routine that will move the linear actuator and the DC motor in order to dispense food
-      
-      if(cont >= foodrations)
+            
+      cont++;
+      if(cont >= foodrations){
         cont=0;
+      }
+
+      Serial.println("");
+      Serial.println("After dispense, Cont: "+String(cont));
     } 
   }
 }
@@ -177,8 +213,8 @@ void setup(){
   initLoadCells();
 
   EEPROM.begin(50); // Gives us 50 bytes from the eeprom (flash memory o ESP32)
-  EEPROM.write(0,0); // Test
-  EEPROM.commit(); // Test
+  EEPROM.write(0,0); // Test: reset to factory settings 
+  EEPROM.commit(); // Test: reset to factory settings 
   
   while(!MyRtc.begin()){
     Serial.println("RTC module not found!");
