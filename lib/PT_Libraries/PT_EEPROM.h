@@ -53,11 +53,11 @@ void appDataReceiving(){
   */
 
   
-  // TEST: birthday 2021/7/1, younger than 3 months 
-  EEPROM.write(8,0x07); // PetBirthDay[0] MSB year 2020
-  EEPROM.write(9,0xE5); // PetBirthDay[0] LSB year 2020
-  EEPROM.write(10,7);  // PetBirthDay[1] month 12
-  EEPROM.write(11,1);  // PetBirthDay[2] day 21
+  // TEST: birthday 2021/7/1, younger than 3 months
+  EEPROM.write(8,0x07); // PetBirthDay[0] MSB year 2021
+  EEPROM.write(9,0xE5); // PetBirthDay[0] LSB year 2021
+  EEPROM.write(10,10);  // PetBirthDay[1] month 7
+  EEPROM.write(11,1);  // PetBirthDay[2] day 1
   EEPROM.write(12,0);   // PetBirthDay[3] hour 0
   EEPROM.write(13,0);   // PetBirthDay[4] minute 0
   EEPROM.write(14,0);   // PetBirthDay[5] sec 0

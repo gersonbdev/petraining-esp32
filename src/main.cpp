@@ -29,8 +29,8 @@ void initRTC(){
 
   MyRtc.begin();
   //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
-  MyRtc.adjust(DateTime(2021, 11, 1, 13, 40, 0)); // TESTS
-  //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
+  //MyRtc.adjust(DateTime(2021, 11, 1, 17, 11, 0)); // TESTS
+  MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
 
 /*
@@ -217,7 +217,8 @@ void setup(){
   EEPROM.commit(); // Test: reset to factory settings 
   
   while(!MyRtc.begin()){
-    Serial.println("RTC module not found!");
+    Serial.println("");
+    Serial.println("RTC module not found!!!");
     Serial.println("");
     delay(1000);
   }
