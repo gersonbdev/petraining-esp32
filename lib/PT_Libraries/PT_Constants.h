@@ -2,10 +2,10 @@
 #define SCREW_MOTOR 27 // Digital pin output D27 -> endless screw
 #define LINEAR_MOTOR_R 25 // Digital pin output D34 -> linear actuator right turn (H bridge)
 #define LINEAR_MOTOR_L 33 // Digital pin output D35 -> linear actuator left turn (H bridge)
-#define DOUT_INT 19 // Data output pin 19 HX711 internal 
+#define DOUT_INT 19 // Data output pin 19 HX711 internal
 #define CLK_INT 18 // Clock output pin 18 HX711 internal
-//#define DOUT_EXT 13 // Data output pin 13 HX711 external 
-//#define CLK_EXT 14 // Clock output pin 14 HX711 external
+#define DOUT_EXT 13 // Data output pin 13 HX711 external
+#define CLK_EXT 14 // Clock output pin 14 HX711 external
 // SCL -> 22 & SDA -> 21 || RTC
 
 // CONSTANTS

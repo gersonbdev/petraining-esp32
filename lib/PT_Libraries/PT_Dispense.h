@@ -4,30 +4,41 @@
 // Dispensation QUANTITY control variables
 int QuantityToDispense; // quantity to dispense in one try
 int InternalWeight;
+int ExternalWeight;
+int ActualQuantityToDispense;
 
 void dispense(int QuantityToDispense){
 
-  InternalWeight = internal.get_units(10); // Internal weight sense
-  
-  float timeCounting = 0;
-  while((InternalWeight < QuantityToDispense) && (timeCounting <= TIMEOUT_DISPENSE)){
+  InternalWeight = internal.get_units(10); //Internal weight sense
+  ExternalWeight = external.get_units(10); //External weight sense
+  ActualQuantityToDispense = QuantityToDispense - ExternalWeight;
+
+  int timeCounting = 0;
+  while((InternalWeight < ActualQuantityToDispense) && (timeCounting <= TIMEOUT_DISPENSE) && (ActualQuantityToDispense > 0)){
 
     // Enable SCREW_MOTOR to dispense
     digitalWrite(SCREW_MOTOR, HIGH);
     InternalWeight = internal.get_units(10);
+    ExternalWeight = external.get_units(10);
 
-    //////////// VISUALIZING TESTS ////////////////    
-    delay(50);
+    //////////// VISUALIZING TESTS //////////////// 
+    delay(500);
     Serial.println("DISPENSING FOOD, SCREW_MOTOR WORKING !!!!");
     Serial.println("");
-    Serial.println("Real quantity to dispense = "+String(QuantityToDispense)+" grams");
+    Serial.println("Cantidad a dispensar = "+String(QuantityToDispense)+" grams");
+    Serial.println("Cantidad real a dispensar = "+String(ActualQuantityToDispense)+" grams");
+    Serial.println("Peso interno = "+String(InternalWeight)+" grams");
+    Serial.println("Peso externo = "+String(ExternalWeight)+" grams");
+    Serial.println("Time out counting = "+String(timeCounting)+"/"+String(TIMEOUT_DISPENSE)+" seconds");
     Serial.println("");
-    Serial.println("Internal weight = "+String(InternalWeight)+" grams");
-    Serial.println("");
-    delay(50);
+    delay(500);
     //////////// VISUALIZING TESTS ////////////////
 
-    timeCounting =+ 0.1;
+    timeCounting += 1;
+  }
+
+  if(timeCounting >= TIMEOUT_DISPENSE){
+    // Notify to user app
   }
 
   // Disable SCREW MOTOR
