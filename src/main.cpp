@@ -28,9 +28,10 @@ int DispenseTimes[MAX_DISPENSE_PER_DAY][2]; // times dispensation matrix
 void initRTC(){
 
   MyRtc.begin();
+  delay(10);
   //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
   //MyRtc.adjust(DateTime(2021, 11, 1, 17, 11, 0)); // TESTS
-  MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
+  //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
 
 /*
@@ -142,7 +143,7 @@ void calculateEasyTimeDispensation(){
 
 void printRtcConfig(){
 
-  Serial.println("REAL TIME////////// BEGIN ///////////");
+  Serial.println("////////// REAL TIME BEGIN ///////////");
   
   DateTime realDateTime = MyRtc.now();
   Serial.print("DATE: ");
@@ -158,22 +159,22 @@ void printRtcConfig(){
   Serial.print(":");
   Serial.println(realDateTime.second());
 
-  Serial.println("REAL TIME////////// END ///////////");
+  Serial.println("////////// REAL TIME END ///////////");
   Serial.println("");
 }
 
 void printEEPROMInfo(){
-  Serial.println("EEPROM INFORMATION////////// BEGIN ///////////");
+  Serial.println("////////// EEPROM INFORMATION BEGIN ///////////");
   Serial.println("");
   Serial.println("If 1 -> easy configuration mode");
-  Serial.println("if 2 -> customized configuration mode");
+  Serial.println("If 2 -> customized configuration mode");
   Serial.println("Configuration = "+String(ptdata.TypeOfConfig));
   Serial.println("");
   
   Serial.println("User's date (simulated - NOT REAL DATE): "+String( ptdata.RealTimeApp[0] )+"/"+String(ptdata.RealTimeApp[1])+"/"+String(ptdata.RealTimeApp[2])+" user's time: "+String(ptdata.RealTimeApp[3])+":"+String(ptdata.RealTimeApp[4])+":"+String(ptdata.RealTimeApp[5]));
   Serial.println("");
   
-  Serial.println("Pet's birthday: "+String( ptdata.PetBirthDay[2] )+"/"+String(ptdata.PetBirthDay[1])+"/"+String(ptdata.PetBirthDay[0])+" time: "+String(ptdata.PetBirthDay[3])+":"+String(ptdata.PetBirthDay[4])+":"+String(ptdata.PetBirthDay[5]));
+  Serial.println("Pet's BIRTHDAY: "+String( ptdata.PetBirthDay[2] )+"/"+String(ptdata.PetBirthDay[1])+"/"+String(ptdata.PetBirthDay[0])+" time: "+String(ptdata.PetBirthDay[3])+":"+String(ptdata.PetBirthDay[4])+":"+String(ptdata.PetBirthDay[5]));
   Serial.println("");
   
   Serial.println("ptdata.QuantityOfFood if younger than 3 months: "+String( ptdata.QuantityOfFood[0] ));
@@ -185,7 +186,7 @@ void printEEPROMInfo(){
   Serial.println("ptdata.FoodRations if between 3 and 6 months: "+String( ptdata.FoodRations[1] ));
   Serial.println("ptdata.FoodRations if older than 6 months: "+String( ptdata.FoodRations[2] ));
   Serial.println("");
-  Serial.println("EEPROM INFORMATION////////// END ///////////");
+  Serial.println("////////// EEPROM INFORMATION END ///////////");
   Serial.println("");
 }
 

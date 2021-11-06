@@ -14,6 +14,7 @@
 #define CONFIG_EASY 1 // Easy configuratioon preset for quick starting for user
 #define CONFIG_CUSTOM 2 // Custom configuratioon preset for quick starting for user
 #define MAX_DISPENSE_PER_DAY 10 // Maximum times dispensation will happen per day
+#define TIMEOUT_DISPENSE 20 // Maximun time screw motor will be turning, if exceeded, dispense will stop (seconds)
 
 // MACROS
 #define SETUP_EASY (EEPROM.read(0) == CONFIG_EASY) // Preset easy configuration -> 1

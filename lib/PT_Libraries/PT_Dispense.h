@@ -8,10 +8,13 @@ int InternalWeight;
 void dispense(int QuantityToDispense){
 
   InternalWeight = internal.get_units(10); // Internal weight sense
-  while(InternalWeight < QuantityToDispense){
+  
+  float timeCounting = 0;
+  while((InternalWeight < QuantityToDispense) && (timeCounting <= TIMEOUT_DISPENSE)){
 
     // Enable SCREW_MOTOR to dispense
     digitalWrite(SCREW_MOTOR, HIGH);
+    InternalWeight = internal.get_units(10);
 
     //////////// VISUALIZING TESTS ////////////////    
     delay(50);
@@ -21,10 +24,10 @@ void dispense(int QuantityToDispense){
     Serial.println("");
     Serial.println("Internal weight = "+String(InternalWeight)+" grams");
     Serial.println("");
-    delay(500);
+    delay(50);
     //////////// VISUALIZING TESTS ////////////////
 
-    InternalWeight = internal.get_units(10);
+    timeCounting =+ 0.1;
   }
 
   // Disable SCREW MOTOR
@@ -38,7 +41,7 @@ void dispense(int QuantityToDispense){
   Serial.println("");
   digitalWrite(LINEAR_MOTOR_R, HIGH); 
   digitalWrite(LINEAR_MOTOR_L, LOW); 
-  delay(13000);
+  delay(13500);
 
   // Motor stalled [0 0]
   digitalWrite(LINEAR_MOTOR_R, LOW); 
@@ -50,7 +53,7 @@ void dispense(int QuantityToDispense){
   Serial.println("");
   digitalWrite(LINEAR_MOTOR_R, LOW); 
   digitalWrite(LINEAR_MOTOR_L, HIGH);
-  delay(13000);
+  delay(13500);
 
   // Motor stalled
   digitalWrite(LINEAR_MOTOR_R, LOW); 
