@@ -15,7 +15,7 @@ void initLoadCells(){
 
     external.begin(DOUT_EXT, CLK_EXT);
     external.set_gain(128);
-    external.set_scale(612); // Load cell external (B) calibration
+    external.set_scale(929.80); // Load cell external (B) calibration
     external.tare(10);
 
 }

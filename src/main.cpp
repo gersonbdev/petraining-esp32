@@ -30,7 +30,7 @@ void initRTC(){
   MyRtc.begin();
   delay(10);
   //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
-  //MyRtc.adjust(DateTime(2021, 11, 6, 11, 35, 0)); // TESTS
+  MyRtc.adjust(DateTime(2021, 11, 6, 11, 35, 49)); // TESTS
   //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
 
