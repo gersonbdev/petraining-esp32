@@ -229,7 +229,7 @@ void setup(){
 void loop(){
 
   // DATA RECEIVING STAGE !!
-  if( (!SETUP_EASY) && (!SETUP_CUSTOM) ){ // Only if EEPROM.read(0) is 1 or 0 we go forward
+  if( (!SETUP_EASY) && (!SETUP_CUSTOM) ){ // Only if EEPROM.read(0) is 1 or 2 we go forward
 
     Serial.print("Waiting for receiving WiFi transmission...");
     

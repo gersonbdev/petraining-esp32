@@ -15,7 +15,7 @@ void linearActuatorForwards(){
     digitalWrite(LINEAR_MOTOR_R, HIGH);
     digitalWrite(LINEAR_MOTOR_L, LOW);
     delay(1000);
-    Serial.println("Peso externo = "+String(ExternalWeight)+" grams");
+    Serial.println("Peso externo = "+String(ExternalWeight)+" grams"); Serial.println("");
   }
 
   Serial.println("LINEAR ACTUATOR STOPPED !!!!"); Serial.println("");
@@ -25,14 +25,14 @@ void linearActuatorForwards(){
 }
 
 void linearActuatorBackwards(){
-  Serial.println("LINEAR ACTUATOR GOES BACKWARD !!!!"); Serial.println("");
+  Serial.println("LINEAR ACTUATOR GOES BACKWARD !!!!"); Serial.println(""); Serial.println("");
 
   // Time = LINEAR_ACTUATOR_TIME_DELAY x delay(ms) [Seconds]
   for(int i=0; i<=LINEAR_ACTUATOR_TIME_DELAY; i++){
     digitalWrite(LINEAR_MOTOR_R, LOW); 
     digitalWrite(LINEAR_MOTOR_L, HIGH);
     delay(1000);
-    Serial.println("Peso externo = "+String(ExternalWeight)+" grams");
+    Serial.println("Peso externo = "+String(ExternalWeight)+" grams"); Serial.println("");
   }
 
   Serial.println("LINEAR ACTUATOR STOPPED !!!!"); Serial.println("");
