@@ -1,7 +1,7 @@
 #include <EEPROM.h> // EEPROM partition from flash memory
 
 struct ptBasicData{
-  unsigned int TypeOfConfig; // If 1 -> easy configuration mode, if 0 -> customized configuration mode
+  unsigned int TypeOfConfig; // If 1 -> easy configuration mode, if 2 -> customized configuration mode
   unsigned int RealTimeApp[6]; // DateTime real time received from App. Values -> {year, month, day, hour, minute, second}
   unsigned int PetBirthDay[6]; // DataTime pet's birthday received from App. Values -> {year, month, day, 0, 0, 0}
   unsigned int QuantityOfFood[3]; // Quantity of food received from (should be between 50 gr and 500 gr)
@@ -62,7 +62,7 @@ void appDataReceiving(){
   EEPROM.write(13,0);   // PetBirthDay[4] minute 0
   EEPROM.write(14,0);   // PetBirthDay[5] sec 0
   
- 
+
   EEPROM.write(15,0x00); // QuantityOfFood MSB 120 gr younger than 3 months
   EEPROM.write(16,0x78); // QuantityOfFood LSB 120 gr younger than 3 months
   EEPROM.write(17,0x00); // QuantityOfFood MSB 190 gr between 3 and 6 months

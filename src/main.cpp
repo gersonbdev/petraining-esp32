@@ -30,8 +30,8 @@ void initRTC(){
   MyRtc.begin();
   delay(10);
   //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
-  MyRtc.adjust(DateTime(2021, 11, 6, 11, 35, 49)); // TESTS
-  //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
+  //MyRtc.adjust(DateTime(2021, 11, 6, 11, 35, 49)); // TESTS
+  MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
 
 /*
@@ -47,7 +47,7 @@ void calculatePetAge(){
   Serial.println("");
 }
 
-void calculateEasyTimeDispensation(){
+void easyDispensation(){
   /**
    *  This guarantees to us that calculation of Age2Days won't affect to
    *  calculation time dispensation
@@ -231,6 +231,8 @@ void loop(){
   // DATA RECEIVING STAGE !!
   if( (!SETUP_EASY) && (!SETUP_CUSTOM) ){ // Only if EEPROM.read(0) is 1 or 2 we go forward
 
+    Serial.println("");
+    Serial.println("");
     Serial.print("Waiting for receiving WiFi transmission...");
     
     while( (!SETUP_EASY) && (!SETUP_CUSTOM) ){
@@ -240,7 +242,7 @@ void loop(){
       initRTC(); // Here we configurate the RTC using user information
       
       delay(1000);
-      Serial.println(".");
+      Serial.print(".");
     }
     Serial.println("");
     Serial.println("Wifi transmission received -> OK");
@@ -256,7 +258,7 @@ void loop(){
   calculatePetAge(); // We always need to calculate pet's age
   
   if(ptdata.TypeOfConfig == CONFIG_EASY){ // EASY CONFIGURATION CASE
-    calculateEasyTimeDispensation();
+    easyDispensation();
   }
   else if(ptdata.TypeOfConfig == CONFIG_CUSTOM){ // CUSTOMIZABLE CONFIGURATION CASE
     Serial.println("Custom");
