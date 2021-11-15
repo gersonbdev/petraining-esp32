@@ -1,16 +1,11 @@
 // Libraries
 #include <RTClib.h> // Real Time Clock module
-#include <EEPROM.h> // EEPROM partition from flash memory
 #include <Wire.h> // I2C
-#include <WiFi.h>
-#include <WebServer.h>
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
+#include <PT_Connection.h> // Connection with server
 
 // User Libraries
-#include "PT_Constants.h"
 #include "PT_Dispense.h"
-#include "PT_EEPROM.h"
+
 
 // Objects
 RTC_DS3231 MyRtc;
@@ -98,7 +93,7 @@ void dispenseCalculation(){
             
       cont++;
       if(cont >= ptdata.FoodRations){
-        cont=0;
+        cont = 0;
       }
 
       Serial.println("");
@@ -136,6 +131,9 @@ void printEEPROMInfo(){
 
   Serial.println("Quantity of food per day: "+String( ptdata.QuantityOfFood ));
   Serial.println("Food rations per day: "+String( ptdata.FoodRations ));
+  Serial.println("Server Hour: "+String( ptdata.ServerHour ));
+  Serial.println("Server Minute: "+String( ptdata.ServerMinute ));
+  Serial.println("Server Seconds"+String( ptdata.ServerSecond ));
 
   Serial.println("////////// EEPROM INFORMATION END ///////////");
   Serial.println("");
@@ -164,9 +162,8 @@ void setup(){
 
   initLoadCells();
 
-  EEPROM.begin(1000);
-  EEPROM.commit();
-  
+  EEPROM.begin(512);
+
   while(!MyRtc.begin()){
     Serial.println("");
     Serial.println("RTC module not found!!!");
@@ -174,22 +171,25 @@ void setup(){
     delay(1000);
   }
 
+  leer(6).toCharArray(ssid, 56);
+  leer(56).toCharArray(pass, 106);
+  setup_wifi();
+
+  initRTC();
 }
 
 void loop(){
 
-  // DATA RECEIVING STAGE !!
-  appDataReceiving(); // From here we should get the information we need from user's App and we storage it in EEPROM
-  initLocalVariables(); // Here we get the EERPOM values to new manageable varaibles
-  initRTC(); // Here we configurate the RTC using user information
-  
-  Serial.println("");
+  if( (MyRtc.now().hour()==0) && (MyRtc.now().minute()==0) && (MyRtc.now().second()==0) ){
+    connectionServer();
+  }
+
+  dispenseCalculation();
+
+  // Visualize information with serial
   Serial.println("");
   printEEPROMInfo();
   printRtcConfig();
-  
-  dispenseCalculation();
-  
-  // Visualize information with serial
+
   delay(10000); 
 }

@@ -16,7 +16,6 @@
 #define MAX_DISPENSE_PER_DAY 10 // Maximum times dispensation will happen per day
 #define TIMEOUT_DISPENSE 20 // Maximun time screw motor will be turning, if exceeded, dispense will stop (seconds)
 #define LINEAR_ACTUATOR_TIME_DELAY 14 // Time linear actuator will move forewards and backwards in seconds
-#define UserPasswordChar 50 // Maximum ServerUser and ServerPassword bytes length
 
 // MACROS
 #define SETUP_EASY (EEPROM.read(0) == CONFIG_EASY) // Preset easy configuration -> 1

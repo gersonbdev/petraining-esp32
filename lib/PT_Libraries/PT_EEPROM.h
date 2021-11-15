@@ -1,5 +1,4 @@
-#include <EEPROM.h> // EEPROM partition from flash memory
-#include <PT_Constants.h>
+#include <PT_Connection.h>
 
 struct ptBasicData{
   unsigned int QuantityOfFood;
@@ -7,9 +6,10 @@ struct ptBasicData{
   unsigned int ServerHour;
   unsigned int ServerMinute;
   unsigned int ServerSecond;
-  char ServerUser[UserPasswordChar];
-  char ServerPassword[UserPasswordChar];
+  char ServerUser[50];
+  char ServerPassword[50];
 };
+
 
 // Struct definiton
   ptBasicData ptdata;
@@ -18,8 +18,6 @@ struct ptBasicData{
  * Receives the App information from WiFi to storage it in the EEPROM
  */
 void appDataReceiving(){
-
-  
 
   // 255 and variable -> esto guarda los primeros 8 bits
   // (0xFF00) and variable -> esto guarda los siguientes 8 bits
@@ -31,31 +29,6 @@ void appDataReceiving(){
   EEPROM.write(4, 30);   // ServerMinute
   EEPROM.write(5, 10);   // ServerSecond
 
-  int addr = 6; // EEPROM address to storage ServerUser (up to 55)
-  /**
-   * @brief Server user data writing in EEPROM
-   * 
-   */
-  char ssidUser[UserPasswordChar] = "Usuario: El string que me envía el server";
-  for (int i = 0; i < UserPasswordChar; i++){
-      EEPROM.write(addr, ssidUser[i]);
-      addr += 1;
-  }
-  
-  /**
-   * @brief Server password data writing in EEPROM
-   * 
-   */
-  // addr equals to 56 (up to 105) at this point EEPROM address to storage ServerPassword
-  char ssidPassword[UserPasswordChar] = "Password: El string que me envía el server";
-  for (int i = 0; i < UserPasswordChar; i++){
-      EEPROM.write(addr, ssidPassword[i]);
-      addr += 1;
-  }
-  // addr equals to 106 at this point
-
-  EEPROM.commit();
-}
 
 /**
  * Initializes local variables by using EEPROM information
@@ -66,8 +39,12 @@ void initLocalVariables(){
   ptdata.ServerHour = EEPROM.read(3);
   ptdata.ServerMinute = EEPROM.read(4);
   ptdata.ServerSecond = EEPROM.read(5);
+}
 
-  // reading byte-by-byte ServerUser
+
+
+
+  /*
   for (int i = 6; i < (6+UserPasswordChar); i++) {
     ptdata.ServerUser[i-6] = EEPROM.read(i);
       if (ptdata.ServerUser[i] == 0){
@@ -75,14 +52,31 @@ void initLocalVariables(){
       }
   }
 
-  // reading byte-by-byte ServerPassword
   for (int i = (UserPasswordChar+6); i < (UserPasswordChar+UserPasswordChar+6); i++) {
   ptdata.ServerPassword[i-6-UserPasswordChar] = EEPROM.read(i);
     if (ptdata.ServerPassword[i] == 0){
         break;
     }
   }
+  */
+
+/*
+  int addr = 6; // EEPROM address to storage ServerUser (up to 55)
+  char ssidUser[UserPasswordChar] = "Usuario: El string que me envía el server";
+  for (int i = 0; i < UserPasswordChar; i++){
+      EEPROM.write(addr, ssidUser[i]);
+      addr += 1;
+  }
+  char ssidPassword[UserPasswordChar] = "Password: El string que me envía el server";
+  for (int i = 0; i < UserPasswordChar; i++){
+      EEPROM.write(addr, ssidPassword[i]);
+      addr += 1;
+  }
+  // addr equals to 106 at this point
+
+  EEPROM.commit();
 }
+*/
 
 
 
