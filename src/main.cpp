@@ -41,10 +41,10 @@ void dispenseCalculation(){
     DispenseTimes[x][1] = (DispenseTimes[x][1] - DispenseTimes[x][0]*60); //Only the minute of the time (hh:->mm:ss)
   }
   
-  QuantityToDispense = ptdata.QuantityOfFood/ptdata.FoodRations; // Quantity to dispense in one try
+  int QuantityToDispense = ptdata.QuantityOfFood/ptdata.FoodRations; // Quantity to dispense in one try
   Serial.println("DISPENSATION TIMES");
   
-  for(int y=0; y<ptdata.FoodRations; y++){
+  for(int y=0; y < ptdata.FoodRations; y++){
     Serial.println(String(DispenseTimes[y][0])+" hours and "+String(DispenseTimes[y][1])+" minutes");
   }
   

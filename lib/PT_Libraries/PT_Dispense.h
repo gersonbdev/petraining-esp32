@@ -2,7 +2,6 @@
 #include "PT_LoadCell.h"
 
 // Dispensation QUANTITY control variables
-int QuantityToDispense; // quantity to dispense in one try
 int InternalWeight;
 int ExternalWeight;
 int ActualQuantityToDispense;
@@ -42,7 +41,7 @@ void linearActuatorBackwards(){
 }
 
 
-void dispense(int QuantityToDispense){
+void dispense(int _QuantityToDispense){
 
   // Left move by using H-bridge (Linear Actuator Backwards) [0 1]
   digitalWrite(LINEAR_MOTOR_R, LOW); 
@@ -56,7 +55,7 @@ void dispense(int QuantityToDispense){
   int timeCounting = 0;
   InternalWeight = internal.get_units(10); //Internal weight sense
   ExternalWeight = external.get_units(10); //External weight sense
-  ActualQuantityToDispense = QuantityToDispense - ExternalWeight;
+  ActualQuantityToDispense = _QuantityToDispense - ExternalWeight;
 
   while((InternalWeight < ActualQuantityToDispense) && (timeCounting <= TIMEOUT_DISPENSE) && (ActualQuantityToDispense > 0)){
 
@@ -69,7 +68,7 @@ void dispense(int QuantityToDispense){
     delay(500);
     Serial.println("DISPENSING FOOD, SCREW_MOTOR WORKING !!!!");
     Serial.println("");
-    Serial.println("Cantidad a dispensar = "+String(QuantityToDispense)+" grams");
+    Serial.println("Cantidad a dispensar = "+String(_QuantityToDispense)+" grams");
     Serial.println("Cantidad real a dispensar = "+String(ActualQuantityToDispense)+" grams");
     Serial.println("Peso interno = "+String(InternalWeight)+" grams");
     Serial.println("Peso externo = "+String(ExternalWeight)+" grams");
