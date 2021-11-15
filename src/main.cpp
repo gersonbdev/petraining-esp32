@@ -2,6 +2,10 @@
 #include <RTClib.h> // Real Time Clock module
 #include <EEPROM.h> // EEPROM partition from flash memory
 #include <Wire.h> // I2C
+#include <WiFi.h>
+#include <WebServer.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
 
 // User Libraries
 #include "PT_Constants.h"
@@ -24,9 +28,9 @@ void initRTC(){
 
   MyRtc.begin();
   delay(10);
-  //MyRtc.adjust( DateTime(ptdata.RealTimeApp[0], ptdata.RealTimeApp[1], ptdata.RealTimeApp[2], ptdata.RealTimeApp[3], ptdata.RealTimeApp[4], ptdata.RealTimeApp[5]) ); // Sets real time from user's app
+  MyRtc.adjust( DateTime(2021, 11, 6, ptdata.ServerHour, ptdata.ServerMinute, ptdata.ServerSecond) ); // Sets real time from user's app
   //MyRtc.adjust(DateTime(2021, 11, 6, 11, 35, 49)); // TESTS
-  MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
+  //MyRtc.adjust( DateTime(__DATE__, __TIME__) ); // Sets real time with from our PC
 }
 
 void dispenseCalculation(){
@@ -151,7 +155,7 @@ void setup(){
     for(int m=0; m<2; m++){
       DispenseTimes[n][m] = 0;
     }
-  }  
+  }
 
   // Output Motor Pins
   pinMode(SCREW_MOTOR, OUTPUT);
@@ -160,8 +164,8 @@ void setup(){
 
   initLoadCells();
 
-  EEPROM.begin(50); // Gives us 50 bytes from the eeprom (flash memory o ESP32)
-  EEPROM.commit(); // Test: reset to factory settings 
+  EEPROM.begin(1000);
+  EEPROM.commit();
   
   while(!MyRtc.begin()){
     Serial.println("");
